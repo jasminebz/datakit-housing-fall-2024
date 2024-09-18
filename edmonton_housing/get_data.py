@@ -1,18 +1,16 @@
 import pandas as pd
-from sodapy import Socrata
+import requests
 
-def get_data(dataset_identifier, token = None, limit = 2000):
+def get_data(dataset_identifier, params = {}):
     'A function to retrieve data from the City of Edmonton open data portal'
 
-    # Unauthenticated client only works with public data sets. Note 'None'
-    # in place of application token:
-    client = Socrata("data.edmonton.ca", app_token=token)
+    # base URL for edmonton city data
+    url = f"https://data.edmonton.ca/resource/{dataset_identifier}.json"
 
-    # results returned as JSON from API / converted to Python list of
-    # dictionaries by sodapy.
-    results = client.get(dataset_identifier, limit=limit)
+    # make api request, returning in json form
+    response = requests.get(url, params = params).json()
 
-    # Convert to pandas DataFrame
-    results_df = pd.DataFrame.from_records(results)
+    # convert response to dataframe
+    response_df = pd.DataFrame.from_records(response)
 
-    return results_df
+    return response_df
